@@ -85,6 +85,8 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.13.3
+      cache:
+        directories: $HOME/.ccache
 
     - os: osx
       language: generic
@@ -94,6 +96,8 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.14.5
+      cache:
+        directories: $HOME/.ccache
 
     - os: osx
       language: generic
@@ -103,6 +107,8 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.17.3
+      cache:
+        directories: $HOME/.ccache
 
     - os: osx
       language: generic
@@ -112,6 +118,8 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.19.3
+      cache:
+        directories: $HOME/.ccache
 
 
     # headless builds for MacOS
@@ -123,6 +131,8 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.13.3
+      cache:
+        directories: $HOME/.ccache
 
     - os: osx
       language: generic
@@ -132,6 +142,8 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.14.5
+      cache:
+        directories: $HOME/.ccache
 
     - os: osx
       language: generic
@@ -141,6 +153,8 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.17.3
+      cache:
+        directories: $HOME/.ccache
 
     - os: osx
       language: generic
@@ -150,6 +164,8 @@ jobs:
         - ENABLE_CONTRIB=0
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.19.3
+      cache:
+        directories: $HOME/.ccache
 
 
     # Contrib builds for MacOS
@@ -161,6 +177,8 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.13.3
+      cache:
+        directories: $HOME/.ccache
 
     - os: osx
       language: generic
@@ -170,6 +188,8 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.14.5
+      cache:
+        directories: $HOME/.ccache
 
     - os: osx
       language: generic
@@ -179,6 +199,8 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.17.3
+      cache:
+        directories: $HOME/.ccache
 
     - os: osx
       language: generic
@@ -188,6 +210,8 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=0
         - TEST_DEPENDS=numpy==1.19.3
+      cache:
+        directories: $HOME/.ccache
 
 
     # headless contrib builds for MacOS
@@ -199,6 +223,8 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.13.3
+      cache:
+        directories: $HOME/.ccache
 
     - os: osx
       language: generic
@@ -208,6 +234,8 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.14.5
+      cache:
+        directories: $HOME/.ccache
 
     - os: osx
       language: generic
@@ -217,6 +245,8 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.17.3
+      cache:
+        directories: $HOME/.ccache
 
     - os: osx
       language: generic
@@ -226,6 +256,8 @@ jobs:
         - ENABLE_CONTRIB=1
         - ENABLE_HEADLESS=1
         - TEST_DEPENDS=numpy==1.19.3
+      cache:
+        directories: $HOME/.ccache
 
 
     # default builds for Linux
@@ -896,6 +928,9 @@ install: |
     if [[ $SDIST == 1 ]]; then
       python -m pip install --upgrade pip
       python -m pip install scikit-build
+      git submodule sync
+      git submodule update --init --recursive opencv
+      git submodule update --init --recursive opencv_contrib
       python setup.py sdist
     else
       build_wheel $REPO_DIR $PLAT
