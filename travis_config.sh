@@ -19,7 +19,8 @@ function bdist_wheel_cmd {
     # copied from multibuild's common_utils.sh
     # add osx deployment target so it doesnt default to 10.6
     local abs_wheelhouse=$1
-    CI_BUILD=1 pip wheel --verbose --wheel-dir="$PWD/dist" . $BDIST_PARAMS
+    pip3 install --upgrade scikit-build setuptools wheel cmake pip ${TEST_DEPENDS}
+    CI_BUILD=1 CXXFLAGS="-w" python3 setup.py --verbose bdist_wheel --dist-dir="$PWD/dist" $BDIST_PARAMS
     cp dist/*.whl $abs_wheelhouse
     if [ -z "$IS_MACOS" ]; then
       TOOLS_PATH=/opt/_internal/tools
