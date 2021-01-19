@@ -934,6 +934,7 @@ install: |
       python setup.py sdist
     else
       build_wheel $REPO_DIR $PLAT
+      ret_code=$?
     fi
 
     set +x
