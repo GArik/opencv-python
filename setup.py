@@ -67,16 +67,16 @@ def main():
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
     x64 = sys.maxsize > 2 ** 32
 
-    package_name = "opencv-python"
+    package_name = "opencovis-python"
 
     if build_contrib and not build_headless:
-        package_name = "opencv-contrib-python"
+        package_name = "opencovis-contrib-python"
 
     if build_contrib and build_headless:
-        package_name = "opencv-contrib-python-headless"
+        package_name = "opencovis-contrib-python-headless"
 
     if build_headless and not build_contrib:
-        package_name = "opencv-python-headless"
+        package_name = "opencovis-python-headless"
 
     long_description = io.open("README.md", encoding="utf-8").read()
 
@@ -217,14 +217,14 @@ def main():
     skbuild.setup(
         name=package_name,
         version=package_version,
-        url="https://github.com/skvark/opencv-python",
+        url="https://github.com/GArik/opencv-python",
         license="MIT",
         description="Wrapper package for OpenCV python bindings.",
         long_description=long_description,
         long_description_content_type="text/markdown",
         packages=packages,
         package_data=package_data,
-        maintainer="Olli-Pekka Heinisuo",
+        maintainer="Igor Murzov",
         ext_modules=EmptyListWithLength(),
         install_requires=numpy_version,
         python_requires=">=3.6",
