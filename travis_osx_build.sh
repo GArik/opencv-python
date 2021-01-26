@@ -44,7 +44,7 @@ function pre_build_osx {
     local num_cpus=$(sysctl -n hw.ncpu)
     num_cpus=${num_cpus:-4}
     local travis_start_time=$(($TRAVIS_TIMER_START_TIME/10**9))
-    local time_limit=$((45*60))
+    local time_limit=$((46*60))
 
     cd "$repo_dir"
     git submodule sync
@@ -87,9 +87,6 @@ function pre_build_osx {
             # -DWITH_MSMF=OFF
         )
     fi
-
-    # Clear ccache stats
-    ccache -z
 
     # Configure build
     cd "$build_dir"
@@ -151,13 +148,13 @@ function pre_build_osx {
         opencv_alphamat
         opencv_stitching
         opencv_gapi
+        all
     )
     for m in "${CV_MODULES[@]}"; do
         if make help | grep -w "$m"; then
-            # Check time limit (3min should be enough for a module to built)
+            # Check time limit (3 min should be enough for a module build)
             local projected_time=$(($(date +%s) - travis_start_time + 3 * 60))
             if [ $projected_time -ge $time_limit ]; then
-                if [ -n "$USE_CCACHE" ]; then ccache -s; fi
                 goto_exit
                 return 1
             fi
@@ -166,10 +163,6 @@ function pre_build_osx {
             echo "Elapsed time: "$((elapsed_time/60))"m (${elapsed_time}s)"
         fi
     done
-    make -j${num_cpus}
-
-    # Print ccache stats
-    if [ -n "$USE_CCACHE" ]; then ccache -s; fi
 }
 
 function build_osx {
@@ -207,12 +200,22 @@ function build_bdist_osx_wheel {
     local repo_dir=$(abspath ${1:-$REPO_DIR})
     [ -z "$repo_dir" ] && echo "repo_dir not defined" && exit 1
     local wheelhouse=$(abspath ${WHEEL_SDIR:-wheelhouse})
+
     start_spinner
     if [ -n "$(is_function "pre_build")" ]; then pre_build; fi
     stop_spinner
+
     pip install scikit-build
     pip install numpy
+
+    if [ -n "$USE_CCACHE" ]; then ccache -z; fi
+
     pre_build_osx "$repo_dir" || return $?
+
+    if [ -n "$USE_CCACHE" ]; then ccache -s; fi
+
     build_osx "$repo_dir"
+
+    cp "$repo_dir"/dist/*.whl "$wheelhouse"
     repair_wheelhouse "$wheelhouse"
 }
