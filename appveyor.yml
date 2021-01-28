@@ -1,9 +1,8 @@
 environment:
   USER:
-    secure: fXgF9uyy6sT0JoVOR7BoqA==
-
+    secure: faDqtT21igTqQlsKgq9+UA==
   PASS:
-    secure: 0bXSOVjf9x8L7nErTivu92TF1FwNosTjFJQPmxp8Dys=
+    secure: LARTd04b3VIW+7ADTEP7Lw==
 
   matrix:
     - PYTHON: "C:\\Python36"
@@ -158,7 +157,7 @@ before_test:
 
     cd ${Env:APPVEYOR_BUILD_FOLDER}\tests
     $env:PYTHONWARNINGS = "ignore:::pip._internal.cli.base_command"
-    &"${Env:PYTHON}\\python.exe" -m pip install --user --no-warn-script-location (ls "../dist/opencv_*.whl")
+    &"${Env:PYTHON}\\python.exe" -m pip install --user --no-warn-script-location (ls "../dist/opencovis_*.whl")
     if ($LastExitCode -ne 0) {throw $LastExitCode}
 
 test_script:
@@ -168,7 +167,7 @@ test_script:
     "%PYTHON%\\python.exe" -m unittest test
 
 artifacts:
-- path: dist\opencv*.whl
+- path: dist\opencovis*.whl
   name: wheels
 
 deploy_script:
@@ -194,7 +193,7 @@ deploy_script:
       }
 
       &"${Env:PYTHON}\\python.exe" -m pip install twine
-      &"${Env:PYTHON}\\python.exe" -m twine upload -u ${Env:USER} -p ${Env:PASS} --skip-existing dist/opencv*
+      &"${Env:PYTHON}\\python.exe" -m twine upload -u ${Env:USER} -p ${Env:PASS} --skip-existing dist/opencovis*
     }
     else {
       echo "Tag not set, deployment skipped."

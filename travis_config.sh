@@ -7,7 +7,12 @@ echo "===  Loading config.sh  === "
 
 # To see build progress
 function build_wheel {
-    build_bdist_wheel $@
+    if [ -n "$IS_OSX" ]; then
+      source travis_osx_build.sh
+      build_bdist_osx_wheel $@ || return $?
+    else
+      build_bdist_wheel $@
+    fi
 }
 
 function bdist_wheel_cmd {
@@ -16,7 +21,7 @@ function bdist_wheel_cmd {
     local abs_wheelhouse=$1
     CI_BUILD=1 pip wheel --verbose --wheel-dir="$PWD/dist" . $BDIST_PARAMS
     cp dist/*.whl $abs_wheelhouse
-    if [ -z "$IS_OSX" ]; then
+    if [ -z "$IS_MACOS" ]; then
       TOOLS_PATH=/opt/_internal/tools
       /opt/python/cp37-cp37m/bin/python -m venv $TOOLS_PATH
       source $TOOLS_PATH/bin/activate
@@ -26,7 +31,7 @@ function bdist_wheel_cmd {
     if [ -n "$USE_CCACHE" -a -z "$BREW_BOOTSTRAP_MODE" ]; then ccache -s; fi
 }
 
-if [ -n "$IS_OSX" ]; then
+if [ -n "$IS_MACOS" ]; then
   echo "    > OSX environment "
   export MAKEFLAGS="-j$(sysctl -n hw.ncpu)"
 else
@@ -35,7 +40,7 @@ else
   export MAKEFLAGS="-j$(grep -E '^processor[[:space:]]*:' /proc/cpuinfo | wc -l)"
 fi
 
-if [ -n "$IS_OSX" ]; then
+if [ -n "$IS_MACOS" ]; then
 
     source travis_osx_brew_cache.sh
 
@@ -92,7 +97,7 @@ function pre_build {
   echo "Starting pre-build"
   set -e -o pipefail
 
-  if [ -n "$IS_OSX" ]; then
+  if [ -n "$IS_MACOS" ]; then
     echo "Running for OSX"
 
     local CACHE_STAGE; (echo "$TRAVIS_BUILD_STAGE_NAME" | grep -qiF "final") || CACHE_STAGE=1
@@ -115,15 +120,8 @@ function pre_build {
         brew install ffmpeg_opencv
     fi
 
-    # echo 'Installing qt5'
-    
-    # if [ -n "$CACHE_STAGE" ]; then
-    #    echo "Qt5 has bottle, no caching needed"
-    # else
-    #    brew switch qt 5.13.2
-    #    brew pin qt
-    #    export PATH="/usr/local/opt/qt/bin:$PATH"
-    # fi
+    echo 'Set up qt5'
+    export PATH="/usr/local/opt/qt/bin:$PATH"
 
     if [ -n "$CACHE_STAGE" ]; then
         brew_go_bootstrap_mode 0
@@ -143,7 +141,7 @@ function run_tests {
     echo "Run tests..."
     echo $PWD
 
-    if [ -n "$IS_OSX" ]; then
+    if [ -n "$IS_MACOS" ]; then
       echo "Running for OS X"
       cd ../tests/
     else
