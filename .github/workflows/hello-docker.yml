@@ -1,0 +1,26 @@
+name: OpenCV Python Wheels
+
+on:
+  push:
+    branches:
+      - ga_test
+
+jobs:
+  build:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Download ManyLinux image
+        run: |
+          docker pull quay.io/skvark/manylinux2014_x86_64
+      - name: Print Hello
+        run: |
+          docker run --rm quay.io/skvark/manylinux2014_x86_64 echo "Hello world"
